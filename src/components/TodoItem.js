@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Calendar, Tag, Edit2, Trash2, CheckCircle, Clock, Play } from 'lucide-react';
 
 const TodoItem = ({ todo, onUpdate, onDelete }) => {
-  const [isUpdating, setIsUpdating] = useState(false);
 
   const handleStatusChange = async (newStatus) => {
     try {
@@ -116,7 +115,6 @@ const TodoItem = ({ todo, onUpdate, onDelete }) => {
           {todo.status !== 'Completed' && (
             <button
               onClick={() => handleStatusChange('Completed')}
-              disabled={isUpdating}
               className="p-1 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 disabled:opacity-50"
               title="Mark as completed"
             >
@@ -127,7 +125,6 @@ const TodoItem = ({ todo, onUpdate, onDelete }) => {
           {todo.status === 'Pending' && (
             <button
               onClick={() => handleStatusChange('In Progress')}
-              disabled={isUpdating}
               className="p-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 disabled:opacity-50"
               title="Start working on this"
             >
@@ -138,7 +135,6 @@ const TodoItem = ({ todo, onUpdate, onDelete }) => {
           {todo.status === 'In Progress' && (
             <button
               onClick={() => handleStatusChange('Pending')}
-              disabled={isUpdating}
               className="p-1 text-yellow-600 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300 disabled:opacity-50"
               title="Mark as pending"
             >
@@ -149,7 +145,6 @@ const TodoItem = ({ todo, onUpdate, onDelete }) => {
           {/* Edit Button */}
           <button
             onClick={() => onUpdate(todo._id, null, true)} // true indicates edit mode
-            disabled={isUpdating}
             className="p-1 text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 disabled:opacity-50"
             title="Edit todo"
           >
@@ -159,7 +154,6 @@ const TodoItem = ({ todo, onUpdate, onDelete }) => {
           {/* Delete Button */}
           <button
             onClick={handleDelete}
-            disabled={isUpdating}
             className="p-1 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 disabled:opacity-50"
             title="Delete todo"
           >
@@ -172,6 +166,7 @@ const TodoItem = ({ todo, onUpdate, onDelete }) => {
 };
 
 export default TodoItem;
+
 
 
 

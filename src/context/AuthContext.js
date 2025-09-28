@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import axios from 'axios';
+import API from '../api';
 
 const AuthContext = createContext();
 
@@ -51,21 +51,14 @@ const initialState = {
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Set up axios interceptor for token
-  useEffect(() => {
-    if (state.token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${state.token}`;
-    } else {
-      delete axios.defaults.headers.common['Authorization'];
-    }
-  }, [state.token]);
+  // Token is now handled by API interceptor
 
   // Check if user is logged in on app start
   useEffect(() => {
     const checkAuth = async () => {
       if (state.token) {
         try {
-          const response = await axios.get('/api/auth/me');
+          const response = await API.get('/api/auth/me');
           dispatch({
             type: 'LOGIN_SUCCESS',
             payload: {
@@ -80,12 +73,12 @@ export const AuthProvider = ({ children }) => {
       }
     };
     checkAuth();
-  }, []);
+  }, [state.token]);
 
   const login = async (email, password) => {
     dispatch({ type: 'LOGIN_START' });
     try {
-      const response = await axios.post('/api/auth/login', { email, password });
+      const response = await API.post('/api/auth/login', { email, password });
       const { token, user } = response.data;
       
       localStorage.setItem('token', token);
@@ -108,7 +101,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password) => {
     dispatch({ type: 'LOGIN_START' });
     try {
-      const response = await axios.post('/api/auth/register', { name, email, password });
+      const response = await API.post('/api/auth/register', { name, email, password });
       const { token, user } = response.data;
       
       localStorage.setItem('token', token);
@@ -159,6 +152,7 @@ export const useAuth = () => {
   }
   return context;
 };
+
 
 
 

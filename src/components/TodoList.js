@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useCallback } from 'react';
+import API from '../api';
 import toast from 'react-hot-toast';
 import TodoItem from './TodoItem';
 import TodoForm from './TodoForm';
@@ -25,7 +25,7 @@ const TodoList = () => {
   });
 
   // Fetch todos
-  const fetchTodos = async () => {
+  const fetchTodos = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -36,7 +36,7 @@ const TodoList = () => {
       params.append('sortBy', filters.sortBy);
       params.append('sortOrder', filters.sortOrder);
       
-      const response = await axios.get(`/api/todos?${params}`);
+      const response = await API.get(`/api/todos?${params}`);
       setTodos(response.data.todos);
     } catch (error) {
       console.error('Error fetching todos:', error);
@@ -44,27 +44,27 @@ const TodoList = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
 
   // Fetch statistics
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
-      const response = await axios.get('/api/todos/stats/summary');
+      const response = await API.get('/api/todos/stats/summary');
       setStats(response.data.summary);
     } catch (error) {
       console.error('Error fetching stats:', error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchTodos();
     fetchStats();
-  }, [filters]);
+  }, [filters, fetchTodos, fetchStats]);
 
   // Create todo
   const handleCreate = async (todoData) => {
     try {
-      const response = await axios.post('/api/todos', todoData);
+      const response = await API.post('/api/todos', todoData);
       setTodos(prev => [response.data.todo, ...prev]);
       setShowForm(false);
       fetchStats();
@@ -85,7 +85,7 @@ const TodoList = () => {
     }
 
     try {
-      const response = await axios.put(`/api/todos/${id}`, updateData);
+      const response = await API.put(`/api/todos/${id}`, updateData);
       setTodos(prev => prev.map(todo => 
         todo._id === id ? response.data.todo : todo
       ));
@@ -100,7 +100,7 @@ const TodoList = () => {
   // Delete todo
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`/api/todos/${id}`);
+      await API.delete(`/api/todos/${id}`);
       setTodos(prev => prev.filter(todo => todo._id !== id));
       fetchStats();
       toast.success('Todo deleted successfully');
@@ -303,6 +303,7 @@ const TodoList = () => {
 };
 
 export default TodoList;
+
 
 
 
